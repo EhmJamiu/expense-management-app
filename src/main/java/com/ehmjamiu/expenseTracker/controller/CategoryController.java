@@ -1,0 +1,116 @@
+package com.ehmjamiu.expenseTracker.controller;
+
+
+import com.ehmjamiu.expenseTracker.entity.Category;
+import com.ehmjamiu.expenseTracker.exceptionHandler.CategoryNotFound;
+import com.ehmjamiu.expenseTracker.exceptionHandler.ErrorResponse;
+import com.ehmjamiu.expenseTracker.service.CategoryService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.annotation.*;
+import tools.jackson.databind.json.JsonMapper;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@RestController
+public class CategoryController {
+
+    private final CategoryService categoryService;
+    private final JsonMapper jsonMapper;
+
+
+
+    @Autowired
+    public CategoryController(CategoryService categoryService, JsonMapper jsonMapper) {
+        this.categoryService = categoryService;
+        this.jsonMapper = jsonMapper;
+      }
+
+
+    @PostMapping("/categories")
+    public Category saveCategory(@RequestBody Category category){
+        return categoryService.save(category);
+
+    }
+
+
+    @GetMapping("/categories")
+    public List<Category> findAllCategory() {
+        return categoryService.findAll();
+    }
+
+    @GetMapping("/categories/{id}")
+    public Category findACategory(@PathVariable Integer id) {
+        return categoryService.findById(id);
+    }
+
+    @DeleteMapping("/categories/{id}")
+    public void deleteCategory(@PathVariable Integer id) {
+        categoryService.deleteById(id);
+    }
+
+    // patch mapping has not yet return CategoryResponseDto object.
+    @PatchMapping("categories/{id}")
+    public Category patchCategory(@PathVariable Integer id, @RequestBody Map<String, Object> patchPayload) {
+        var existingCategory = categoryService.findById(id);
+
+        if(patchPayload.containsKey("id")){
+            throw new RuntimeException("The request body must not contain id");
+        }
+        var  patchedCategory = jsonMapper.updateValue(existingCategory, patchPayload);
+        return categoryService.save(patchedCategory);
+    }
+
+    @PutMapping("categories/{id}")
+    public Category updateCategory(@PathVariable Integer id, @RequestBody Map<String, Object> patchPayload) {
+        var existingCategory = findACategory(id);
+
+        if(patchPayload.containsKey("id")){
+            throw new RuntimeException("The request body must not contain id");
+        }
+        var  updatedCategory = jsonMapper.updateValue(existingCategory, patchPayload);
+        return categoryService.save(updatedCategory);
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleException(CategoryNotFound e) {
+        ErrorResponse error = new ErrorResponse();
+
+        error.setStatus(HttpStatus.NOT_FOUND.value());
+        error.setMessage(e.getMessage());
+        error.setTimeStamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        ErrorResponse error = new ErrorResponse();
+
+        error.setStatus(HttpStatus.BAD_REQUEST.value());
+        error.setMessage(e.getMessage());
+        error.setTimeStamp(System.currentTimeMillis());
+
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<?> handleException(MethodArgumentNotValidException e) {
+        Map<String, String> errors  = new HashMap<>();
+        e.getBindingResult().getAllErrors().forEach(
+                error -> {
+                    String fieldName = ((FieldError)error).getField();
+                    String errorMessage = error.getDefaultMessage();
+                    errors.put(fieldName, errorMessage);
+                });
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+
+    }
+}
