@@ -1,59 +1,67 @@
 package com.ehmjamiu.expenseTracker.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.Year;
-import java.util.List;
+
 
 @Data
 @Entity
 @AllArgsConstructor
-@Builder
 public class Budget {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
-
-    public String name;
+    private Integer id;
 
     @Positive
-    public BigDecimal amount;
+    @NotNull
+    private BigDecimal amount;
 
-    @Min(value = 1)
-    @Max(value = 12)
-    public Month month;
+    @Enumerated(EnumType.ORDINAL)
+//    @Max(value = 12)
+//    @Min(value = 1)
+    private Month month;
 
-    public Year year;
-
-    @OneToMany(mappedBy = "budgets")
-    @JsonBackReference
-    public List<Category> category;
+    @Min(value = 2002)
+    @Max(value = 2030)
+    @JsonFormat(pattern = "yyyy")
+    private Integer year;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonManagedReference
-    public Users user;
+    @JoinColumn(name = "category_id")
+    private Category category;
 
 
     @Column(updatable = false)
-    public LocalDateTime createdAt;
+    @JsonFormat(shape =JsonFormat.Shape.STRING, timezone = "UTC+1", pattern = "dd-mm-yyyy hh:mm a")
+    private LocalDateTime createdAt;
 
     @Column(insertable = false)
-    public LocalDateTime updatedAt;
+    @JsonFormat(shape =JsonFormat.Shape.STRING, timezone = "UTC+1", pattern = "dd-mm-yyyy hh:mm a")
+    private LocalDateTime updatedAt;
 
     public Budget() {
-        createdAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
     }
+
+    @PrePersist
+    private void initializedCreateAt(){
+        if(createdAt == null)
+            createdAt = LocalDateTime.now();
+    }
+
+
 }

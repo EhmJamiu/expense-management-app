@@ -1,6 +1,8 @@
 package com.ehmjamiu.expenseTracker.controller;
 
 
+import com.ehmjamiu.expenseTracker.dto.CategoryDto;
+import com.ehmjamiu.expenseTracker.dto.CategoryResponseDto;
 import com.ehmjamiu.expenseTracker.entity.Category;
 import com.ehmjamiu.expenseTracker.exceptionHandler.CategoryNotFound;
 import com.ehmjamiu.expenseTracker.exceptionHandler.ErrorResponse;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.json.JsonMapper;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,14 +36,14 @@ public class CategoryController {
 
 
     @PostMapping("/categories")
-    public Category saveCategory(@RequestBody Category category){
-        return categoryService.save(category);
+    public CategoryResponseDto saveCategory(@RequestBody CategoryDto dto){
+        return categoryService.save(dto);
 
     }
 
 
     @GetMapping("/categories")
-    public List<Category> findAllCategory() {
+    public List<CategoryResponseDto> findAllCategory() {
         return categoryService.findAll();
     }
 
@@ -57,24 +60,19 @@ public class CategoryController {
     // patch mapping has not yet return CategoryResponseDto object.
     @PatchMapping("categories/{id}")
     public Category patchCategory(@PathVariable Integer id, @RequestBody Map<String, Object> patchPayload) {
-        var existingCategory = categoryService.findById(id);
+        Category existingCategory = categoryService.findById(id);
 
         if(patchPayload.containsKey("id")){
             throw new RuntimeException("The request body must not contain id");
         }
         var  patchedCategory = jsonMapper.updateValue(existingCategory, patchPayload);
-        return categoryService.save(patchedCategory);
+        //patchedCategory.setUpdatedAt(LocalDateTime.now());
+        return categoryService.savePatch(patchedCategory);
     }
 
     @PutMapping("categories/{id}")
-    public Category updateCategory(@PathVariable Integer id, @RequestBody Map<String, Object> patchPayload) {
-        var existingCategory = findACategory(id);
-
-        if(patchPayload.containsKey("id")){
-            throw new RuntimeException("The request body must not contain id");
-        }
-        var  updatedCategory = jsonMapper.updateValue(existingCategory, patchPayload);
-        return categoryService.save(updatedCategory);
+    public Category updateCategory(@PathVariable Integer id, @RequestBody Category category) {
+       return categoryService.updateCategory(id, category);
     }
 
     @ExceptionHandler

@@ -2,6 +2,7 @@ package com.ehmjamiu.expenseTracker.entity;
 
 import com.ehmjamiu.expenseTracker.model.TransactionType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -16,40 +17,44 @@ import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
-@Builder
 @Entity
 public class Transaction{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Integer id;
+    private Integer id;
 
     @NotBlank
-    public String title;
-
-    public String description;
+    private String title;
 
     @Positive
     @NotNull
-    public BigDecimal amount;
+    private BigDecimal amount;
 
     @NotNull
-    public TransactionType type;
+    private TransactionType type;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonManagedReference
-    public Users users;
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @NotNull
     @Column(updatable = false)
-    public LocalDateTime createdAt;
+    @JsonFormat(shape =JsonFormat.Shape.STRING, timezone = "UTC+1", pattern = "dd-mm-yyyy hh:mm a")
+    private LocalDateTime createdAt;
 
     @Column(insertable = false)
-    public LocalDateTime updatedAt;
+    @JsonFormat(shape =JsonFormat.Shape.STRING, timezone = "UTC+1", pattern = "dd-mm-yyyy hh:mm a")
+    private LocalDateTime updatedAt;
 
 
     public Transaction() {
-        createdAt = LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+    }
+
+    @PrePersist
+    private void initializedCreateAt(){
+        if(createdAt == null)
+            createdAt = LocalDateTime.now();
     }
 }
