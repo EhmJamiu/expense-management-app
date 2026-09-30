@@ -15,17 +15,15 @@ import java.math.BigDecimal;
 @Data
 @Entity
 public class SpendingSummary {
+
+    private BigDecimal budgetAmount;
+
+    private BigDecimal totalSpent;
+
+    private BigDecimal remainingAmount;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
-
-    BigDecimal budgetAmount;
-
-    BigDecimal totalSpent;
-
-    BigDecimal remainingAmount;
-
-    Boolean budgetExceeded;
+    private Boolean budgetExceeded;
 
 
 }
