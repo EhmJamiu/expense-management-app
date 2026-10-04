@@ -3,24 +3,29 @@ package com.ehmjamiu.expenseTracker.controller;
 
 import com.ehmjamiu.expenseTracker.dto.CategoryDto;
 import com.ehmjamiu.expenseTracker.dto.CategoryResponseDto;
+import com.ehmjamiu.expenseTracker.dto.TransactionDto;
 import com.ehmjamiu.expenseTracker.entity.Category;
+import com.ehmjamiu.expenseTracker.entity.Transaction;
 import com.ehmjamiu.expenseTracker.exceptionHandler.CategoryNotFound;
 import com.ehmjamiu.expenseTracker.exceptionHandler.ErrorResponse;
 import com.ehmjamiu.expenseTracker.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 import tools.jackson.databind.json.JsonMapper;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@RestController
+@Controller
 public class CategoryController {
 
     private final CategoryService categoryService;
@@ -33,6 +38,59 @@ public class CategoryController {
         this.categoryService = categoryService;
         this.jsonMapper = jsonMapper;
       }
+
+    @GetMapping("/categories/list")
+    public String getAllTransactionList(Model model){
+        List<Category> categoryList =categoryService.findAllCategory();
+
+        model.addAttribute("categories", categoryList);
+
+        return "category";
+    }
+
+    @GetMapping("/categories/add")
+    public String addTransaction(Model model) {
+
+
+        Category category = new Category();
+        model.addAttribute("category", category);
+
+        return "category-form";
+    }
+
+    @PostMapping("/categories/saveCategory")
+    public String saveACategory(@ModelAttribute("category") CategoryDto category) {
+
+        categoryService.save(category);
+        return "redirect:/categories/list";
+    }
+
+    @GetMapping("/categories/editCategory")
+    public String showFormForUpdate(@RequestParam("id") Integer id, Model model) {
+        Category category = categoryService.findById(id);
+
+        model.addAttribute("category", category);
+
+        return "edit-category-form";
+    }
+
+    @PostMapping("categories/saveEditedCategory")
+    public String saveEditCategory(@ModelAttribute("id") CategoryDto category){
+
+        categoryService.save(category);
+
+        return "redirect:/categories/list";
+    }
+
+
+    @GetMapping("/categories/deleteCategory")
+    public String deleteTask(@RequestParam("id") Integer id){
+
+        categoryService.deleteById(id);
+
+        return "redirect:/categories/list";
+    }
+
 
 
     @PostMapping("/categories")

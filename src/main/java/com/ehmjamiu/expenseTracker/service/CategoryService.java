@@ -2,8 +2,10 @@ package com.ehmjamiu.expenseTracker.service;
 
 import com.ehmjamiu.expenseTracker.dto.CategoryDto;
 import com.ehmjamiu.expenseTracker.dto.CategoryResponseDto;
+import com.ehmjamiu.expenseTracker.dto.TransactionDto;
 import com.ehmjamiu.expenseTracker.entity.Budget;
 import com.ehmjamiu.expenseTracker.entity.Category;
+import com.ehmjamiu.expenseTracker.entity.Transaction;
 import com.ehmjamiu.expenseTracker.exceptionHandler.CategoryNotFound;
 import com.ehmjamiu.expenseTracker.mapper.CategoryMapper;
 import com.ehmjamiu.expenseTracker.repo.CategoryRepository;
@@ -20,6 +22,10 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+
+    public List<Category> getCategoryName() {
+        return categoryRepository.getCategoryName();
+    }
 
 
     public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
@@ -72,4 +78,11 @@ public class CategoryService {
         return categoryRepository.save(existingCategory);
     }
 
-   }
+    public List<Category> findAllCategory() {
+        return categoryRepository.findAll();
+    }
+
+//    public TransactionDto findACategory(Integer id) {
+//        return transactionRepository.findById(id);
+//    }
+}

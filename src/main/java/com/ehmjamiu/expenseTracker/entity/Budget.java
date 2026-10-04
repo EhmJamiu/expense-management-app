@@ -21,7 +21,6 @@ import java.time.Year;
 @Entity
 @AllArgsConstructor
 public class Budget {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

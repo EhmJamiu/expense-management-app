@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Transaction</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+<body>
+<div class="flex flex-col max-w-full  bg-blue-200 rounded-2xl p-5 min-h-screen m-5">
+
+    <h1 class="items-center font-bold text-3xl py-3">Expense Management Application</h1>
+    <hr><hr>
+    <br>
+
+    <div class="flex ">
+        <h2 class="text-2xl font-bold">Transactions </h2>
+        <hr><hr>
+        <br>
+        <div class="px-10 flex ml-10 gap-15 items-center ">
+            <a th:href="@{/home-page}" class="mx-2 p-2 px-6 text-white  bg-blue-950 rounded-md hover:bg-blue-400
+            transition duration-600 hover:text-blue-950 hover:outline-blue-950 outline-1 text-right">Go Back to Dashboard</a>
+
+            <a th:href="@{/transactions/add}" class="mx-2 p-2 px-12 text-right text-blue-950 font-bold hover:bg-blue-950 rounded-md bg-blue-600
+            transition duration-600 hover:text-white hover:outline-blue-950 outline-1"> + Add Transaction</a>
+        </div>
+        </div>
+    <hr> <hr>
+
+    <br>
+    <div class="mr-4 my-2 p-2 pt-4">
+
+            <table class="items-center w-full justify-center">
+                <thead class="bg-blue-900 text-white p-4">
+                <tr class="h-10 font-light">
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr class="py-2 my-3" th:each="transaction : ${transactions}">
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="*{transaction.title}"></td>
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="${transaction.category.name}"></td>
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="${transaction.type}"></td>
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="${transaction.amount}"></td>
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="${transaction.createdAt}"></td>
+                    <td class="text-right"><a class="bg-blue-700 text-white  px-6" th:href="@{/transactions/editTransaction(id=${transaction.id})}">Edit</a>
+                        <a class="bg-red-900 text-white px-6" th:href="@{/transactions/deleteTransaction(id=${transaction.id})}">Delete</a></td>
+
+                </tr>
+                </tbody>
+            </table>
+
+    </div>
+
+
+
+
+</div>
+
+
+</body>
+</html>

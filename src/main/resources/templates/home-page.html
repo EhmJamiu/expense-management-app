@@ -1,10 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>$Title$</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Expense Management App</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
 </head>
 <body>
-$END$
+<div class="flex flex-col max-w-full  bg-blue-200 rounded-2xl p-5 min-h-screen m-5">
+
+    <h1 class="items-center font-bold text-3xl py-3">Expense Management Application</h1>
+    <hr><hr>
+    <br>
+
+    <div class="flex ">
+        <h2 class="text-2xl font-bold">Dashboard</h2>
+        <hr><hr>
+        <br>
+        <div class="px-10 grid-cols-3 grid ml-10 gap-15 items-center ">
+            <a th:href="@{/transactions/list}" class="mx-2 p-2 px-6 text-white  bg-blue-950 rounded-md hover:bg-blue-400
+            transition duration-600 hover:text-blue-950 hover:outline-blue-950 outline-1 text-right">Transactions</a>
+            <a th:href="@{/categories/list}" class="mx-2 p-2 px-8 text-white bg-blue-950 rounded-md hover:bg-blue-400
+            transition duration-600 hover:text-blue-950 hover:outline-blue-950 outline-1">Categories</a>
+            <a href="#" class="mx-2 p-2 px-12 text-white bg-blue-950 rounded-md hover:bg-blue-400
+            transition duration-600 hover:text-blue-950 hover:outline-blue-950 outline-1">Budget</a>
+        </div>
+        <span class="font-light text-right px-6 bg-white p-2 flex ml-auto" th:text="${currentDate}"></span> </div> <br>
+    <hr> <hr>
+
+    <br>
+
+
+    <div class="grid grid-cols-3 items-center gap-8 max-w-[1000px] ">
+        <div class=" bg-green-300 text-green-900 font-bold p-4">
+            <p>Total Income</p>
+            <hr class="text-white outline-1  mb-4 mt-2">
+            <p class="text-2xl"><span th:text="${totalIncome}"></span></p>
+        </div>
+
+        <div class=" bg-red-300 text-red-900 font-bold p-4">
+            <p>Total Expenses</p>
+            <hr class="text-white outline-1 mb-4 mt-2 ">
+            <p class="text-2xl"><span th:text="${totalExpense}" ></span></p>
+        </div>
+
+        <div class="bg-blue-300 text-blue-900 font-bold p-4">
+            <p>Balance</p>
+            <hr class="text-white outline-1  mb-4 mt-2 ">
+            <p class="text-2xl"><span th:text="${totalBalance}" ></span></p>
+        </div>
+    </div> <br>
+    <hr><hr>
+
+    <div class="grid grid-cols-2 gap-4  mr-4 my-2 p-2 pt-4">
+        <div class="w-[120%] bg-amber-50">
+            <h2 class="font-bold mt-4 mx-4 ">Recent Transactions</h2>
+            <hr> <br>
+
+            <table class="items-center w-full justify-center">
+                <thead class="bg-blue-900 text-white p-4">
+                    <tr class="h-10 font-light">
+                        <th>Title</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Date</th>
+
+                    </tr>
+                </thead>
+
+                <tbody>
+                <tr class="py-2 my-3" th:each="transaction : ${transactions}">
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="${transaction.title()}"></td>
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="${transaction.type()}"></td>
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="${transaction.amount}"></td>
+                    <td class="py-2 my-2 bg-gray-200 ml-2 pl-2" th:text="${transaction.createdAt()}"></td>
+
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div  class=" w-[80%] bg-blue-300 ml-auto" >
+            <h2 class="font-bold mt-4 mx-4 ">Spending Summary</h2>
+            <hr> <br>
+            <div th:each="amountByCategory : ${amountByCategories}" class="bg-green-400 max-w-[600px] py-2 outline-double grid grid-cols-2 gap-4">
+               <div> <span th:text="${amountByCategory[0]} + ':' " class="bg-blue-700 px-4 text-white text-2xl "></span> </div>
+              <div>  <span th:text="${amountByCategory[1]}" class="font-bold text-2xl text-right ml-[30px] py-4 px-4"></span> </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <br>
+
+    <span> <a th:href="@{/transactions/list}" class="font-bold underline bg-blue-500 m-2 p-2 hover:bg-blue-950 hover:text-white
+        transition duration-500">View All Transactions</a></span>
+
+
+</div>
+
+
 </body>
 </html>
